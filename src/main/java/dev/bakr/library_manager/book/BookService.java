@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /* This class is now a Spring Bean (In Spring, a bean is any class that is managed by
 the Spring IoC container — i.e., it’s created, configured, injected, and destroyed by
@@ -13,14 +14,18 @@ injected into other components (like controllers) as a dependency. */
 @Service
 public class BookService {
     private final BookRepository bookRepository;
+    private final BookDTOMapper bookDTOMapper;
 
     // this annotation also can be removed if it's a constructor injection like this.
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, BookDTOMapper bookDTOMapper) {
         this.bookRepository = bookRepository;
+        this.bookDTOMapper = bookDTOMapper;
     }
 
-    public List<Book> getBooks() {
-        return bookRepository.findAll();
+    public List<BookDTO> getBooks() {
+        return bookRepository.findAll()
+                .stream()
+                .map(bookDTOMapper).collect(Collectors.toList());
     }
 }

@@ -24,7 +24,7 @@ public class BookController {
 
     // Handles HTTP GET requests; aligns with REST where GET retrieves resources.
     @GetMapping
-    public List<Book> getBooks() {
+    public List<BookDTO> getBooks() {
         return bookService.getBooks();
     }
 }

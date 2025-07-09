@@ -54,7 +54,16 @@ public class Book {
     public Book() {
     }
 
-    public Book(Integer id, String title, String isbn, Integer pagesCount, String imageLink, LocalDate publishedOn, BookStatus status, Author author, Category category, Publisher publisher) {
+    public Book(Integer id,
+            String title,
+            String isbn,
+            Integer pagesCount,
+            String imageLink,
+            LocalDate publishedOn,
+            BookStatus status,
+            Author author,
+            Category category,
+            Publisher publisher) {
         this.id = id;
         this.title = title;
         this.isbn = isbn;
