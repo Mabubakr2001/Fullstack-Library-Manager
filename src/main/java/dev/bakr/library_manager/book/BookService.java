@@ -14,13 +14,13 @@ injected into other components (like controllers) as a dependency. */
 public class BookService {
     private final BookRepository bookRepository;
 
+    // this annotation also can be removed if it's a constructor injection like this.
     @Autowired
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
     public List<Book> getBooks() {
-        // ChatGPT: why bookRepository.findAll().toString(); returned the whole array as a string, not the book object?
         return bookRepository.findAll();
     }
 }

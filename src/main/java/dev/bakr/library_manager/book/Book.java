@@ -1,5 +1,8 @@
 package dev.bakr.library_manager.book;
 
+import dev.bakr.library_manager.author.Author;
+import dev.bakr.library_manager.category.Category;
+import dev.bakr.library_manager.publisher.Publisher;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -16,30 +19,42 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "book_id", updatable = false)
     private Integer id;
+
     @Column(name = "title", nullable = false, unique = true)
     private String title;
+
     @Column(name = "isbn", nullable = false, unique = true)
     private String isbn;
+
     @Column(name = "pages_count")
     private Integer pagesCount;
+
     @Column(name = "image_link")
     private String imageLink;
+
     @Column(name = "published_on")
     private LocalDate publishedOn;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private BookStatus status;
-    @Column(name = "author_id", nullable = false, updatable = false)
-    private Integer authorId;
-    @Column(name = "category_id", nullable = false, updatable = false)
-    private Integer categoryId;
-    @Column(name = "publisher_id", nullable = false, updatable = false)
-    private Integer publisherId;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id", referencedColumnName = "author_id")
+    private Author author;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "publisher_id", referencedColumnName = "publisher_id")
+    private Publisher publisher;
 
     public Book() {
     }
 
-    public Book(Integer id, String title, String isbn, Integer pagesCount, String imageLink, LocalDate publishedOn, BookStatus status, Integer authorId, Integer categoryId, Integer publisherId) {
+    public Book(Integer id, String title, String isbn, Integer pagesCount, String imageLink, LocalDate publishedOn, BookStatus status, Author author, Category category, Publisher publisher) {
         this.id = id;
         this.title = title;
         this.isbn = isbn;
@@ -47,9 +62,9 @@ public class Book {
         this.imageLink = imageLink;
         this.publishedOn = publishedOn;
         this.status = status;
-        this.authorId = authorId;
-        this.categoryId = categoryId;
-        this.publisherId = publisherId;
+        this.author = author;
+        this.category = category;
+        this.publisher = publisher;
     }
 
     public Integer getId() {
@@ -68,6 +83,10 @@ public class Book {
         return pagesCount;
     }
 
+    public String getImageLink() {
+        return imageLink;
+    }
+
     public LocalDate getPublishedOn() {
         return publishedOn;
     }
@@ -76,35 +95,15 @@ public class Book {
         return status;
     }
 
-    public Integer getAuthorId() {
-        return authorId;
+    public Author getAuthor() {
+        return author;
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
+    public Category getCategory() {
+        return category;
     }
 
-    public Integer getPublisherId() {
-        return publisherId;
-    }
-
-    public String getImageLink() {
-        return imageLink;
-    }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", isbn='" + isbn + '\'' +
-                ", pagesCount=" + pagesCount +
-                ", imageLink='" + imageLink + '\'' +
-                ", publishedOn=" + publishedOn +
-                ", status='" + status + '\'' +
-                ", authorId=" + authorId +
-                ", categoryId=" + categoryId +
-                ", publisherId=" + publisherId +
-                '}';
+    public Publisher getPublisher() {
+        return publisher;
     }
 }
