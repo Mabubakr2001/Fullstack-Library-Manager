@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
 
+/* Implements the Function interface (interface with only one abstract method) to
+enable usage in stream operations and controller responses where a simplified,
+structured version of Book is needed. */
 @Service
 public class BookDTOMapper implements Function<Book, BookDTO> {
     @Override
