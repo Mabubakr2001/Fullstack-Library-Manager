@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-// Declares this class as a REST controller where return values are auto-converted to JSON.
+// Declares this class as a REST controller (a bean) where return values are auto-converted to JSON.
 @RestController
 // Sets a base URL path for all endpoints in this controller, following REST grouping principles.
 @RequestMapping(path = "api/v1/books")
