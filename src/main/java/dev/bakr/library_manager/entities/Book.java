@@ -1,6 +1,6 @@
 package dev.bakr.library_manager.entities;
 
-import dev.bakr.library_manager.BookStatus;
+import dev.bakr.library_manager.enums.BookStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

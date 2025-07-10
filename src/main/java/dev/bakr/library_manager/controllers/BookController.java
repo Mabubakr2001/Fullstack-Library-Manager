@@ -1,6 +1,6 @@
 package dev.bakr.library_manager.controllers;
 
-import dev.bakr.library_manager.dtos.BookDTO;
+import dev.bakr.library_manager.dtos.BookDto;
 import dev.bakr.library_manager.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +28,12 @@ public class BookController {
 
     // Handles HTTP GET requests; aligns with REST where GET retrieves resources.
     @GetMapping
-    public List<BookDTO> getBooks() {
+    public List<BookDto> getBooks() {
         return bookService.getBooks();
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<BookDTO> getBook(@PathVariable Integer id) {
+    public ResponseEntity<BookDto> getBook(@PathVariable Integer id) {
         return bookService.getBook(id);
     }
 }
