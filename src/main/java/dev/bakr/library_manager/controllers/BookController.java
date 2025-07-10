@@ -14,7 +14,7 @@ import java.util.List;
 // Declares this class as a REST controller (a bean) where return values are auto-converted to JSON.
 @RestController
 // Sets a base URL path for all endpoints in this controller, following REST grouping principles.
-@RequestMapping(path = "/books")
+@RequestMapping(path = "api/v1/books")
 public class BookController {
     private final BookService bookService;
 
