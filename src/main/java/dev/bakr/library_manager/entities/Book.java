@@ -1,8 +1,6 @@
-package dev.bakr.library_manager.book;
+package dev.bakr.library_manager.entities;
 
-import dev.bakr.library_manager.author.Author;
-import dev.bakr.library_manager.category.Category;
-import dev.bakr.library_manager.publisher.Publisher;
+import dev.bakr.library_manager.BookStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

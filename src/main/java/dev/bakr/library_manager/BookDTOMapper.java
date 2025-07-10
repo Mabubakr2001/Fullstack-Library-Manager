@@ -1,8 +1,10 @@
-package dev.bakr.library_manager.book;
+package dev.bakr.library_manager;
 
-import dev.bakr.library_manager.author.AuthorDTO;
-import dev.bakr.library_manager.category.CategoryDTO;
-import dev.bakr.library_manager.publisher.PublisherDTO;
+import dev.bakr.library_manager.dtos.AuthorDTO;
+import dev.bakr.library_manager.dtos.BookDTO;
+import dev.bakr.library_manager.dtos.CategoryDTO;
+import dev.bakr.library_manager.dtos.PublisherDTO;
+import dev.bakr.library_manager.entities.Book;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;

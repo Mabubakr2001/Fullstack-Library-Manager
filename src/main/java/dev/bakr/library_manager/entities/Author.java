@@ -1,4 +1,4 @@
-package dev.bakr.library_manager.author;
+package dev.bakr.library_manager.entities;
 
 import jakarta.persistence.*;
 

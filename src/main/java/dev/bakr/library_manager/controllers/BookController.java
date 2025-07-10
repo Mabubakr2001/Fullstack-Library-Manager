@@ -1,7 +1,11 @@
-package dev.bakr.library_manager.book;
+package dev.bakr.library_manager.controllers;
 
+import dev.bakr.library_manager.dtos.BookDTO;
+import dev.bakr.library_manager.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,7 +14,7 @@ import java.util.List;
 // Declares this class as a REST controller (a bean) where return values are auto-converted to JSON.
 @RestController
 // Sets a base URL path for all endpoints in this controller, following REST grouping principles.
-@RequestMapping(path = "api/v1/books")
+@RequestMapping(path = "/books")
 public class BookController {
     private final BookService bookService;
 
@@ -26,5 +30,10 @@ public class BookController {
     @GetMapping
     public List<BookDTO> getBooks() {
         return bookService.getBooks();
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<BookDTO> getBook(@PathVariable Integer id) {
+        return bookService.getBook(id);
     }
 }

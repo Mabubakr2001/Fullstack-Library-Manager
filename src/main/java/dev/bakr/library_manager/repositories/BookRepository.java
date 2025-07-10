@@ -1,5 +1,6 @@
-package dev.bakr.library_manager.book;
+package dev.bakr.library_manager.repositories;
 
+import dev.bakr.library_manager.entities.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

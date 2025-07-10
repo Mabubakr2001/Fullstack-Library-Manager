@@ -1,4 +1,4 @@
-package dev.bakr.library_manager.publisher;
+package dev.bakr.library_manager.entities;
 
 import jakarta.persistence.*;
 
@@ -28,7 +28,12 @@ public class Publisher {
     public Publisher() {
     }
 
-    public Publisher(Integer id, String name, String country, Integer foundedYear, String website, String contactEmail) {
+    public Publisher(Integer id,
+            String name,
+            String country,
+            Integer foundedYear,
+            String website,
+            String contactEmail) {
         this.id = id;
         this.name = name;
         this.country = country;

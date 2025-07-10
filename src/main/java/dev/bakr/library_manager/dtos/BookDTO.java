@@ -1,8 +1,6 @@
-package dev.bakr.library_manager.book;
+package dev.bakr.library_manager.dtos;
 
-import dev.bakr.library_manager.author.AuthorDTO;
-import dev.bakr.library_manager.category.CategoryDTO;
-import dev.bakr.library_manager.publisher.PublisherDTO;
+import dev.bakr.library_manager.BookStatus;
 
 public record BookDTO(Integer id,
         String title,

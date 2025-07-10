@@ -1,4 +1,4 @@
-package dev.bakr.library_manager.book;
+package dev.bakr.library_manager;
 
 public enum BookStatus {
     UNREAD,
