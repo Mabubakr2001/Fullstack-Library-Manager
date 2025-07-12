@@ -1,13 +1,12 @@
 package dev.bakr.library_manager.controllers;
 
-import dev.bakr.library_manager.dtos.BookDto;
+import dev.bakr.library_manager.requestDtos.BookDtoRequest;
+import dev.bakr.library_manager.responseDtos.BookDtoResponse;
 import dev.bakr.library_manager.services.BookService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,12 +27,20 @@ public class BookController {
 
     // Handles HTTP GET requests; aligns with REST where GET retrieves resources.
     @GetMapping
-    public List<BookDto> getBooks() {
+    public List<BookDtoResponse> getBooks() {
         return bookService.getBooks();
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<BookDto> getBook(@PathVariable Integer id) {
+    public ResponseEntity<BookDtoResponse> getBook(@PathVariable Integer id) {
         return bookService.getBook(id);
+    }
+
+    // @RequestBody → Tells Spring to deserialize the incoming JSON into a Java object (BookDtoRequest)
+    /* @Valid → Tells Spring to trigger Jakarta Bean Validation on the deserialized object, enforcing all declared field
+    constraints (e.g., @NotBlank, @Min, etc.) each constraint annotation (@NotBlank, ...) for each field */
+    @PostMapping
+    public ResponseEntity<BookDtoResponse> addBook(@Valid @RequestBody BookDtoRequest bookDtoRequest) {
+        return bookService.addBook(bookDtoRequest);
     }
 }

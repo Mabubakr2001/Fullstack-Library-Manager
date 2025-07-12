@@ -1,9 +1,11 @@
 package dev.bakr.library_manager.services;
 
-import dev.bakr.library_manager.dtos.BookDto;
 import dev.bakr.library_manager.mappers.BookMapper;
 import dev.bakr.library_manager.repositories.BookRepository;
+import dev.bakr.library_manager.requestDtos.BookDtoRequest;
+import dev.bakr.library_manager.responseDtos.BookDtoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ public class BookService {
         this.bookMapper = bookMapper;
     }
 
-    public List<BookDto> getBooks() {
+    public List<BookDtoResponse> getBooks() {
         return bookRepository.findAll()
                 .stream()
                 .map(bookMapper::toDto).collect(Collectors.toList());
@@ -35,7 +37,7 @@ public class BookService {
 
     /* Returns the bookDTO by ID using ResponseEntity (represents the entire HTTP response), which lets us control the
     HTTP status and body. Sends 200 OK if found, or throws an error if not. */
-    public ResponseEntity<BookDto> getBook(Integer id) {
+    public ResponseEntity<BookDtoResponse> getBook(Integer id) {
         /* findById returns Optional<Book>, a container that may or may not hold a value (Book). If a Book is found,
         map. Otherwise, return null. */
         var book = bookRepository.findById(id).orElse(null);
@@ -45,5 +47,11 @@ public class BookService {
         }
         // return new ResponseEntity<>(bookMapper.toDto(book), HttpStatus.OK);
         return ResponseEntity.ok(bookMapper.toDto(book));
+    }
+
+    public ResponseEntity<BookDtoResponse> addBook(BookDtoRequest bookDtoRequest) {
+        var bookEntity = bookMapper.toEntity(bookDtoRequest);
+        var newSavedBook = bookRepository.save(bookEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookMapper.toDto(newSavedBook));
     }
 }
