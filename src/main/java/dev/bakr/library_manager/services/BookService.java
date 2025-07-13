@@ -1,5 +1,7 @@
 package dev.bakr.library_manager.services;
 
+import dev.bakr.library_manager.enums.BookStatus;
+import dev.bakr.library_manager.exceptions.InvalidBookStatusException;
 import dev.bakr.library_manager.mappers.BookMapper;
 import dev.bakr.library_manager.repositories.BookRepository;
 import dev.bakr.library_manager.requestDtos.BookDtoRequest;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,9 +33,7 @@ public class BookService {
     }
 
     public List<BookDtoResponse> getBooks() {
-        return bookRepository.findAll()
-                .stream()
-                .map(bookMapper::toDto).collect(Collectors.toList());
+        return bookRepository.findAll().stream().map(bookMapper::toDto).collect(Collectors.toList());
     }
 
     /* Returns the bookDTO by ID using ResponseEntity (represents the entire HTTP response), which lets us control the
@@ -50,8 +51,21 @@ public class BookService {
     }
 
     public ResponseEntity<BookDtoResponse> addBook(BookDtoRequest bookDtoRequest) {
-        var bookEntity = bookMapper.toEntity(bookDtoRequest);
-        var newSavedBook = bookRepository.save(bookEntity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookMapper.toDto(newSavedBook));
+        var givenBookStatus = bookDtoRequest.status();
+        boolean validStatus = false;
+        // loop over the enum values (constants) and compare each value with the give book status
+        for (int i = 0; i < BookStatus.values().length; i++) {
+            var statusConstant = BookStatus.values()[i];
+            if (statusConstant.name().equalsIgnoreCase(givenBookStatus)) {
+                validStatus = true;
+                break;
+            }
+        }
+        if (!validStatus) {
+            throw new InvalidBookStatusException("Invalid book status: '" + givenBookStatus + "'. Allowed values are: " + Arrays.toString(
+                    BookStatus.values()) + ", and can be lowercase.");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 }

@@ -1,6 +1,5 @@
 package dev.bakr.library_manager.entities;
 
-import dev.bakr.library_manager.enums.BookStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -33,9 +32,8 @@ public class Book {
     @Column(name = "published_on")
     private LocalDate publishedOn;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private BookStatus status;
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "author_id")
@@ -58,7 +56,7 @@ public class Book {
             Integer pagesCount,
             String imageLink,
             LocalDate publishedOn,
-            BookStatus status,
+            String status,
             Author author,
             Category category,
             Publisher publisher) {
@@ -98,7 +96,7 @@ public class Book {
         return publishedOn;
     }
 
-    public BookStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
