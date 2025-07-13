@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,12 +23,20 @@ managed automatically by the Spring IoC container (ApplicationContext), and can 
 injected into other components (like controllers) as a dependency. */
 @Service
 public class BookService {
+    private final AuthorService authorService;
+    private final CategoryService categoryService;
+    private final PublisherService publisherService;
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
 
     // this annotation also can be removed if it's a constructor injection like this.
     @Autowired
-    public BookService(BookRepository bookRepository, BookMapper bookMapper) {
+    public BookService(AuthorService authorService,
+            CategoryService categoryService,
+            PublisherService publisherService, BookRepository bookRepository, BookMapper bookMapper) {
+        this.authorService = authorService;
+        this.categoryService = categoryService;
+        this.publisherService = publisherService;
         this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
     }
@@ -66,6 +75,33 @@ public class BookService {
                     BookStatus.values()) + ", and can be lowercase.");
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+
+        // 1. Fetch the publishing date based on the publisher name (e.g., from external logic or a placeholder)
+        var newBookPublishingDate = fetchPublishingDate(bookDtoRequest.publisherName());
+
+        // 2. Map the incoming BookDtoRequest to a Book entity using MapStruct
+        var newBookEntity = bookMapper.toEntity(bookDtoRequest);
+
+        // 3. Set the calculated publishing date on the new book entity
+        newBookEntity.setPublishedOn(newBookPublishingDate);
+
+        // 4. Set the Author object on the book (either fetch existing or create new if not found)
+        newBookEntity.setAuthor(authorService.findOrCreateAuthor(bookDtoRequest.authorFullName()));
+
+        // 5. Set the Category object on the book (same logic: fetch or create)
+        newBookEntity.setCategory(categoryService.findOrCreateCategory(bookDtoRequest.categoryName()));
+
+        // 6. Set the Publisher object on the book (fetch or create based on name)
+        newBookEntity.setPublisher(publisherService.findOrCreatePublisher(bookDtoRequest.publisherName()));
+
+        // 7. Persist the fully prepared Book entity into the database
+        var savedBook = bookRepository.save(newBookEntity);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookMapper.toDto(savedBook));
+    }
+
+    private LocalDate fetchPublishingDate(String publisherName) {
+        // just a placeholder date for now
+        return LocalDate.now();
     }
 }

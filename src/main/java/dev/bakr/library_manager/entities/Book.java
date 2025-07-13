@@ -80,35 +80,87 @@ public class Book {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getIsbn() {
         return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public Integer getPagesCount() {
         return pagesCount;
     }
 
+    public void setPagesCount(Integer pagesCount) {
+        this.pagesCount = pagesCount;
+    }
+
     public String getImageLink() {
         return imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
 
     public LocalDate getPublishedOn() {
         return publishedOn;
     }
 
+    public void setPublishedOn(LocalDate publishedOn) {
+        this.publishedOn = publishedOn;
+    }
+
     public String getStatus() {
         return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Author getAuthor() {
         return author;
     }
 
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
+
     public Category getCategory() {
         return category;
     }
 
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public Publisher getPublisher() {
         return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", pagesCount=" + pagesCount +
+                ", imageLink='" + imageLink + '\'' +
+                ", publishedOn=" + publishedOn +
+                ", status='" + status + '\'' +
+                ", author=" + author +
+                ", category=" + category +
+                ", publisher=" + publisher +
+                '}';
     }
 }

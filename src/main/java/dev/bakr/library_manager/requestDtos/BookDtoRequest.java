@@ -12,17 +12,17 @@ public record BookDtoRequest(@NotBlank(message = "Title is required") String tit
         @Pattern(regexp = "97[89][0-9]{10}", message = "ISBN must be a 13-digit number starting with 978 or 979")
         String isbn,
 
-        String imageLink,
-
         @NotNull(message = "Pages count is required")
         @Min(value = 1, message = "Pages count must be at least 1")
         Integer pagesCount,
 
+        String imageLink,
+
         @NotNull(message = "Status is required")
         String status,
 
-        @NotBlank(message = "Author name is required")
-        String authorName,
+        @NotBlank(message = "Author full name is required")
+        String authorFullName,
 
         @NotBlank(message = "Category name is required")
         String categoryName,

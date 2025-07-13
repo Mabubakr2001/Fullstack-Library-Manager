@@ -50,19 +50,51 @@ public class Publisher {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Integer getFoundedYear() {
         return foundedYear;
+    }
+
+    public void setFoundedYear(Integer foundedYear) {
+        this.foundedYear = foundedYear;
     }
 
     public String getCountry() {
         return country;
     }
 
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public String getWebsite() {
         return website;
     }
 
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
     public String getContactEmail() {
         return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    @Override
+    public String toString() {
+        return "Publisher{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", country='" + country + '\'' +
+                ", foundedYear=" + foundedYear +
+                ", website='" + website + '\'' +
+                ", contactEmail='" + contactEmail + '\'' +
+                '}';
     }
 }

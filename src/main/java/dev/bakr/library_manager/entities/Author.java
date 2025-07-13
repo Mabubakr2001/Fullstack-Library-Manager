@@ -39,11 +39,33 @@ public class Author {
         return fullName;
     }
 
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public String getNationality() {
         return nationality;
     }
 
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
     public LocalDate getBirthDate() {
         return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Author{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                ", nationality='" + nationality + '\'' +
+                ", birthDate=" + birthDate +
+                '}';
     }
 }
