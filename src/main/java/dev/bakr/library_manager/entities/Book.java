@@ -20,6 +20,9 @@ public class Book {
     @Column(name = "title", nullable = false, unique = true)
     private String title;
 
+    @Column(name = "subtitle")
+    private String subtitle;
+
     @Column(name = "isbn", nullable = false, unique = true)
     private String isbn;
 
@@ -52,6 +55,7 @@ public class Book {
 
     public Book(Integer id,
             String title,
+            String subtitle,
             String isbn,
             Integer pagesCount,
             String imageLink,
@@ -62,6 +66,7 @@ public class Book {
             Publisher publisher) {
         this.id = id;
         this.title = title;
+        this.subtitle = subtitle;
         this.isbn = isbn;
         this.pagesCount = pagesCount;
         this.imageLink = imageLink;
@@ -82,6 +87,14 @@ public class Book {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     public String getIsbn() {

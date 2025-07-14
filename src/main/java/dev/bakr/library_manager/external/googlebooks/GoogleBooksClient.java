@@ -9,6 +9,8 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 // a class that lets us act as a client to Google Books API, even though we are technically the provider.
@@ -30,7 +32,7 @@ public class GoogleBooksClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    public String fetchPublishedDateByTitle(String bookTitle) {
+    public List<String> fetchBookMoreInfoByTitle(String bookTitle, List<String> neededInfo) {
         try {
             // Encode the book title to make it URL-safe (e.g., replace spaces with %20)
             String encodedTitle = URLEncoder.encode(bookTitle, StandardCharsets.UTF_8);
@@ -42,44 +44,50 @@ public class GoogleBooksClient {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
             /* Parse the raw JSON response string into a tree-like structure (JsonNode), allowing easy navigation
-            through nested fields to extract the publishedDate */
+            through nested fields to extract the needed info */
             JsonNode root = objectMapper.readTree(response.getBody());
 
             /* Extract the "items" array from the root node — this array holds the book results from which we'll
-            retrieve the publishedDate */
+            retrieve the needed info */
             JsonNode items = root.path("items");
 
             // Check if the "items" node is an array and not empty
             if (items.isArray() && !items.isEmpty()) {
-                // Retrieve the publishedDate field from the first book in the search results by navigating through volumeInfo
-                return items.get(0).path("volumeInfo").path("publishedDate").asText();
+                JsonNode volumeInfo = items.get(0).path("volumeInfo");
+                List<String> bookMoreInfo = new ArrayList<>();
+                for (String field : neededInfo) {
+                    bookMoreInfo.add(volumeInfo.path(field).asText());
+                }
+                return bookMoreInfo;
             }
             // If anything goes wrong (API error, invalid JSON, etc.), print the error
         } catch (Exception e) {
             System.err.println("Error fetching date from Google Books API: " + e.getMessage());
         }
-        // If no publishedDate found or error happened, return null
+        // If no data found or error happened, return null
         return null;
     }
 
-    public LocalDate getParsedPublishedDate(String bookTitle) {
-        // Call the GoogleBooksClient to get the published date as a String (could be "2020", "2020-05-10", etc.)
-        String publishedDateStr = fetchPublishedDateByTitle(bookTitle);
+    public List<String> getParsedBookMoreInfo(String bookTitle, List<String> neededInfo) {
+        List<String> parsedBookMoreInfo = fetchBookMoreInfoByTitle(bookTitle, neededInfo);
 
-        // If the API didn't return a date or failed, return null to avoid saving incorrect/fake dates
-        if (publishedDateStr == null) {
+        if (parsedBookMoreInfo.isEmpty()) {
             return null;
         }
 
         try {
             // Check if the published date is just a year (e.g., "2001")
-            if (publishedDateStr.length() == 4) {
-                // Convert the year into a full LocalDate using January 1st as default month/day
-                return LocalDate.of(Integer.parseInt(publishedDateStr), 1, 1);
+            var parsedDate = parsedBookMoreInfo.getFirst();
+            LocalDate polishedDate;
+            if (parsedDate.length() == 4) {
+                polishedDate = LocalDate.of(Integer.parseInt(parsedDate), 1, 1);
             } else {
                 // Parse the full ISO date string (e.g., "2018-10-16") into a LocalDate
-                return LocalDate.parse(publishedDateStr); // parses ISO date like 2018-10-16
+                polishedDate = LocalDate.parse(parsedDate); // parses ISO date like 2018-10-16
             }
+            parsedBookMoreInfo.removeFirst();
+            parsedBookMoreInfo.addFirst(String.valueOf(polishedDate));
+            return parsedBookMoreInfo;
         } catch (Exception e) {
             // If the API didn't return a date or failed, return null to avoid saving incorrect/fake dates
             return null;

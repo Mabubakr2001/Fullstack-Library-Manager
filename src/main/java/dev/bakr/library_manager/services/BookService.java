@@ -12,6 +12,7 @@ import dev.bakr.library_manager.responseDtos.BookDtoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,25 +67,30 @@ public class BookService {
                     BookStatus.values()) + ", and can be lowercase.");
         }
 
-        // 1. Fetch the publishing date based on the publisher name (e.g., from external logic or a placeholder)
-        var newBookPublishingDate = googleBooksClient.getParsedPublishedDate(bookDtoRequest.title());
+        // 1. Fetch more info based on the publisher name (e.g., from external logic or a placeholder)
+        List<String> parsedBookMoreInfo = googleBooksClient.getParsedBookMoreInfo(bookDtoRequest.title(),
+                                                                                  List.of("publishedDate", "subtitle")
+        );
 
         // 2. Map the incoming BookDtoRequest to a Book entity using MapStruct
         var newBookEntity = bookMapper.toEntity(bookDtoRequest);
 
         // 3. Set the calculated publishing date on the new book entity
-        newBookEntity.setPublishedOn(newBookPublishingDate);
+        newBookEntity.setPublishedOn(LocalDate.parse(parsedBookMoreInfo.getFirst()));
 
-        // 4. Set the Author object on the book (either fetch existing or create new if not found)
+        // 4. Set the fetched subtitle
+        newBookEntity.setSubtitle(parsedBookMoreInfo.get(1));
+
+        // 5. Set the Author object on the book (either fetch existing or create new if not found)
         newBookEntity.setAuthor(authorService.findOrCreateAuthor(bookDtoRequest.authorFullName()));
 
-        // 5. Set the Category object on the book (same logic: fetch or create)
+        // 6. Set the Category object on the book (same logic: fetch or create)
         newBookEntity.setCategory(categoryService.findOrCreateCategory(bookDtoRequest.categoryName()));
 
-        // 6. Set the Publisher object on the book (fetch or create based on name)
+        // 7. Set the Publisher object on the book (fetch or create based on name)
         newBookEntity.setPublisher(publisherService.findOrCreatePublisher(bookDtoRequest.publisherName()));
 
-        // 7. Persist the fully prepared Book entity into the database
+        // 8. Persist the fully prepared Book entity into the database
         var savedBook = bookRepository.save(newBookEntity);
 
         return bookMapper.toDto(savedBook);
