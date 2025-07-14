@@ -1,5 +1,6 @@
 package dev.bakr.library_manager;
 
+import dev.bakr.library_manager.exceptions.BookNotFoundException;
 import dev.bakr.library_manager.exceptions.InvalidBookStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,17 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return ResponseEntity.badRequest().body(error);
+    }
+
+    // Handle custom exception thrown manually when the needed book isn't found
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<ApiErrorDto> handleBookNotFound(BookNotFoundException ex) {
+        ApiErrorDto error = new ApiErrorDto(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     /* Handle exceptions thrown by Spring's validation framework (Jakarta Bean Validation), triggered by annotations

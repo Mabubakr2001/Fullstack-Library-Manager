@@ -5,6 +5,7 @@ import dev.bakr.library_manager.responseDtos.BookDtoResponse;
 import dev.bakr.library_manager.services.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,8 @@ public class BookController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<BookDtoResponse> getBook(@PathVariable Integer id) {
-        return bookService.getBook(id);
+        BookDtoResponse bookDto = bookService.getBook(id);  // this might throw BookNotFoundException
+        return ResponseEntity.ok(bookDto);
     }
 
     // @RequestBody → Tells Spring to deserialize the incoming JSON into a Java object (BookDtoRequest)
@@ -41,6 +43,7 @@ public class BookController {
     constraints (e.g., @NotBlank, @Min, etc.) each constraint annotation (@NotBlank, ...) for each field */
     @PostMapping
     public ResponseEntity<BookDtoResponse> addBook(@Valid @RequestBody BookDtoRequest bookDtoRequest) {
-        return bookService.addBook(bookDtoRequest);
+        BookDtoResponse bookDto = bookService.addBook(bookDtoRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookDto);
     }
 }

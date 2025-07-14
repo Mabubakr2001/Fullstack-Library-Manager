@@ -1,17 +1,17 @@
 package dev.bakr.library_manager.services;
 
 import dev.bakr.library_manager.enums.BookStatus;
+import dev.bakr.library_manager.exceptions.BookNotFoundException;
 import dev.bakr.library_manager.exceptions.InvalidBookStatusException;
+import dev.bakr.library_manager.external.googlebooks.GoogleBooksClient;
+import dev.bakr.library_manager.helpers.BookStatusValidator;
 import dev.bakr.library_manager.mappers.BookMapper;
 import dev.bakr.library_manager.repositories.BookRepository;
 import dev.bakr.library_manager.requestDtos.BookDtoRequest;
 import dev.bakr.library_manager.responseDtos.BookDtoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +26,7 @@ public class BookService {
     private final AuthorService authorService;
     private final CategoryService categoryService;
     private final PublisherService publisherService;
+    private final GoogleBooksClient googleBooksClient;
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
 
@@ -33,10 +34,14 @@ public class BookService {
     @Autowired
     public BookService(AuthorService authorService,
             CategoryService categoryService,
-            PublisherService publisherService, BookRepository bookRepository, BookMapper bookMapper) {
+            PublisherService publisherService,
+            GoogleBooksClient googleBooksClient,
+            BookRepository bookRepository,
+            BookMapper bookMapper) {
         this.authorService = authorService;
         this.categoryService = categoryService;
         this.publisherService = publisherService;
+        this.googleBooksClient = googleBooksClient;
         this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
     }
@@ -45,39 +50,24 @@ public class BookService {
         return bookRepository.findAll().stream().map(bookMapper::toDto).collect(Collectors.toList());
     }
 
-    /* Returns the bookDTO by ID using ResponseEntity (represents the entire HTTP response), which lets us control the
-    HTTP status and body. Sends 200 OK if found, or throws an error if not. */
-    public ResponseEntity<BookDtoResponse> getBook(Integer id) {
-        /* findById returns Optional<Book>, a container that may or may not hold a value (Book). If a Book is found,
-        map. Otherwise, return null. */
-        var book = bookRepository.findById(id).orElse(null);
-        if (book == null) {
-            // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            return ResponseEntity.notFound().build();
-        }
-        // return new ResponseEntity<>(bookMapper.toDto(book), HttpStatus.OK);
-        return ResponseEntity.ok(bookMapper.toDto(book));
+    /* Retrieves a book by its ID from the repository. If found, it is mapped to a BookDtoResponse and returned.
+    If not found, a BookNotFoundException is thrown, which can be globally handled to return a 404 response. */
+    public BookDtoResponse getBook(Integer id) {
+        var book = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
+        return bookMapper.toDto(book);
     }
 
-    public ResponseEntity<BookDtoResponse> addBook(BookDtoRequest bookDtoRequest) {
+    public BookDtoResponse addBook(BookDtoRequest bookDtoRequest) {
         var givenBookStatus = bookDtoRequest.status();
-        boolean validStatus = false;
-        // loop over the enum values (constants) and compare each value with the give book status
-        for (int i = 0; i < BookStatus.values().length; i++) {
-            var statusConstant = BookStatus.values()[i];
-            if (statusConstant.name().equalsIgnoreCase(givenBookStatus)) {
-                validStatus = true;
-                break;
-            }
-        }
+        boolean validStatus = BookStatusValidator.validateStatus(givenBookStatus);
+
         if (!validStatus) {
             throw new InvalidBookStatusException("Invalid book status: '" + givenBookStatus + "'. Allowed values are: " + Arrays.toString(
                     BookStatus.values()) + ", and can be lowercase.");
         }
 
-
         // 1. Fetch the publishing date based on the publisher name (e.g., from external logic or a placeholder)
-        var newBookPublishingDate = fetchPublishingDate(bookDtoRequest.publisherName());
+        var newBookPublishingDate = googleBooksClient.getParsedPublishedDate(bookDtoRequest.title());
 
         // 2. Map the incoming BookDtoRequest to a Book entity using MapStruct
         var newBookEntity = bookMapper.toEntity(bookDtoRequest);
@@ -97,11 +87,6 @@ public class BookService {
         // 7. Persist the fully prepared Book entity into the database
         var savedBook = bookRepository.save(newBookEntity);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookMapper.toDto(savedBook));
-    }
-
-    private LocalDate fetchPublishingDate(String publisherName) {
-        // just a placeholder date for now
-        return LocalDate.now();
+        return bookMapper.toDto(savedBook);
     }
 }
