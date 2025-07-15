@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /* This class is now a Spring Bean (In Spring, a bean is any class that is managed by
@@ -67,19 +66,25 @@ public class BookService {
                     BookStatus.values()) + ", and can be lowercase.");
         }
 
+        Set<String> neededFieldsFromGoogleBooksAPI = new HashSet<>();
+
+        neededFieldsFromGoogleBooksAPI.add("publishedDate");
+        neededFieldsFromGoogleBooksAPI.add("subtitle");
+
         // 1. Fetch more info based on the publisher name (e.g., from external logic or a placeholder)
-        List<String> parsedBookMoreInfo = googleBooksClient.getParsedBookMoreInfo(bookDtoRequest.title(),
-                                                                                  List.of("publishedDate", "subtitle")
+        HashMap<String, String> parsedBookMoreInfo = googleBooksClient.getBookMoreInfo(bookDtoRequest.title(),
+                                                                                       neededFieldsFromGoogleBooksAPI
+
         );
 
         // 2. Map the incoming BookDtoRequest to a Book entity using MapStruct
         var newBookEntity = bookMapper.toEntity(bookDtoRequest);
 
         // 3. Set the calculated publishing date on the new book entity
-        newBookEntity.setPublishedOn(LocalDate.parse(parsedBookMoreInfo.getFirst()));
+        newBookEntity.setPublishedOn(LocalDate.parse(parsedBookMoreInfo.get("publishedDate")));
 
         // 4. Set the fetched subtitle
-        newBookEntity.setSubtitle(parsedBookMoreInfo.get(1));
+        newBookEntity.setSubtitle(parsedBookMoreInfo.get("subtitle"));
 
         // 5. Set the Author object on the book (either fetch existing or create new if not found)
         newBookEntity.setAuthor(authorService.findOrCreateAuthor(bookDtoRequest.authorFullName()));

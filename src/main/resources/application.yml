@@ -28,3 +28,8 @@ management:
     web:
       exposure:
         include: health, beans
+
+google:
+  books:
+    api:
+      key: AIzaSyAXknYCjs5Yxk3Jy1SnvB85Mslqb998bHY

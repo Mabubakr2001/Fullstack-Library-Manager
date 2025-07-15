@@ -15,8 +15,8 @@ public class Author {
     @Column(name = "full_name", updatable = false, nullable = false)
     private String fullName;
 
-    @Column(name = "nationality", updatable = false, nullable = false)
-    private String nationality;
+    @Column(name = "country", updatable = false, nullable = false)
+    private String country;
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
@@ -24,10 +24,10 @@ public class Author {
     public Author() {
     }
 
-    public Author(Integer id, String fullName, String nationality, LocalDate birthDate) {
+    public Author(Integer id, String fullName, String country, LocalDate birthDate) {
         this.id = id;
         this.fullName = fullName;
-        this.nationality = nationality;
+        this.country = country;
         this.birthDate = birthDate;
     }
 
@@ -43,12 +43,12 @@ public class Author {
         this.fullName = fullName;
     }
 
-    public String getNationality() {
-        return nationality;
+    public String getCountry() {
+        return country;
     }
 
-    public void setNationality(String nationality) {
-        this.nationality = nationality;
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public LocalDate getBirthDate() {
@@ -64,7 +64,7 @@ public class Author {
         return "Author{" +
                 "id=" + id +
                 ", fullName='" + fullName + '\'' +
-                ", nationality='" + nationality + '\'' +
+                ", country='" + country + '\'' +
                 ", birthDate=" + birthDate +
                 '}';
     }
