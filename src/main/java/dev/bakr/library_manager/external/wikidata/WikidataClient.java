@@ -16,6 +16,28 @@ import java.util.Set;
 @Service
 public class WikidataClient {
     private static final Logger logger = LoggerFactory.getLogger(WikidataClient.class);
+    private static final Set<String> KEYWORDS = Set.of("author",
+                                                       "writer",
+                                                       "professor",
+                                                       "psychologist",
+                                                       "neuroscientist",
+                                                       "psychiatrist",
+                                                       "physiologist",
+                                                       "novelist",
+                                                       "journalist",
+                                                       "biographer",
+                                                       "poet",
+                                                       "editor",
+                                                       "screenwriter",
+                                                       "playwright",
+                                                       "philosopher",
+                                                       "historian",
+                                                       "literary",
+                                                       "storyteller",
+                                                       "psychotherapist"
+    );
+    private static final String WIKIDATA_API_BASE = "https://www.wikidata.org/wiki/Special:EntityData/";
+    private static final String SEARCH_API_BASE = "https://www.wikidata.org/w/api.php?action=wbsearchentities";
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -28,8 +50,8 @@ public class WikidataClient {
         HashMap<String, String> authorMoreInfo = new HashMap<>();
 
         try {
-            String searchUrl = "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=" +
-                    URLEncoder.encode(authorFullName, StandardCharsets.UTF_8) +
+            String searchUrl = SEARCH_API_BASE +
+                    "&search=" + URLEncoder.encode(authorFullName, StandardCharsets.UTF_8) +
                     "&language=en&format=json&type=item";
 
             // getting the response -> rest template help
@@ -49,27 +71,6 @@ public class WikidataClient {
 
             JsonNode targetedPerson = null;
 
-            Set<String> keywordSet = Set.of("author",
-                                            "writer",
-                                            "professor",
-                                            "psychologist",
-                                            "neuroscientist",
-                                            "psychiatrist",
-                                            "physiologist",
-                                            "novelist",
-                                            "journalist",
-                                            "biographer",
-                                            "poet",
-                                            "editor",
-                                            "screenwriter",
-                                            "playwright",
-                                            "philosopher",
-                                            "historian",
-                                            "literary",
-                                            "storyteller",
-                                            "psychotherapist"
-            );
-
             // loop over the search results (collection) -> search and looking over the civil registry
             for (JsonNode person : searchResults) {
                 // get the description of the person to look over it
@@ -80,7 +81,7 @@ public class WikidataClient {
 
                 for (String word : words) {
                     // check if the description holder any keyword from these
-                    if (keywordSet.contains(word)) {
+                    if (KEYWORDS.contains(word)) {
                         // if yes -> make it the targeted person
                         targetedPerson = person;
                         // Break out of the loop cuz a match was found (i.e., targetedPerson is no longer null).
@@ -98,7 +99,7 @@ public class WikidataClient {
             String wikidataEntityId = targetedPerson.path("id").asText(); // e.g., "Q47528"
 
             // make the request about that person (an entity)
-            String entityUrl = "https://www.wikidata.org/wiki/Special:EntityData/" + wikidataEntityId + ".json";
+            String entityUrl = WIKIDATA_API_BASE + wikidataEntityId + ".json";
 
             ResponseEntity<String> entityResponse = restTemplate.getForEntity(entityUrl, String.class);
 
